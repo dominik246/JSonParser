@@ -28,21 +28,33 @@ namespace JSonParser
 
                         text_entry = item[searchEntry].ToString();
 
-                        if (text_entry.StartsWith("ACT") || text_entry.StartsWith("SCENE") || text_entry.StartsWith("Exeunt") 
-                        || text_entry.StartsWith("[Reads]") || text_entry.StartsWith("[Aside]"))
+                        if (text_entry.StartsWith("ACT") || text_entry.StartsWith("SCENE"))
                         {
                             continue;
                         }
 
                         if (text_entry.Contains('.'))
                         {
+                            if(!text_entry.Contains(". . .") && item["speech_number"].ToString() != "196")
+                            {
+                                text_entry = text_entry.Replace(". ", ".");
+                            }
                             text_entry = text_entry.Replace(".", "." + Environment.NewLine);
-                            text_entry = text_entry.Replace(". ", "." + Environment.NewLine);
                         }
                         
-                        if (!text_entry.Contains('.'))
+                        while (text_entry.StartsWith(' '))
                         {
-                            text_entry += ' ';
+                            text_entry = text_entry.Remove(0, 1);
+                        }
+
+                        if (text_entry.Contains("[Reads]"))
+                        {
+                            text_entry = text_entry.Replace("[Reads] ", "");
+                        }
+
+                        if (text_entry.Contains("[Aside]"))
+                        {
+                            text_entry = text_entry.Replace("[Aside] ", "");
                         }
 
                         Console.WriteLine(text_entry);
