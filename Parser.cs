@@ -28,13 +28,15 @@ namespace JSonParser
 
                         text_entry = item[searchEntry].ToString();
 
-                        if (text_entry.StartsWith("ACT") || text_entry.StartsWith("SCENE") || text_entry.StartsWith("Exeunt"))
+                        if (text_entry.StartsWith("ACT") || text_entry.StartsWith("SCENE") || text_entry.StartsWith("Exeunt") 
+                        || text_entry.StartsWith("[Reads]") || text_entry.StartsWith("[Aside]"))
                         {
                             continue;
                         }
 
                         if (text_entry.Contains('.'))
                         {
+                            text_entry = text_entry.Replace(".", "." + Environment.NewLine);
                             text_entry = text_entry.Replace(". ", "." + Environment.NewLine);
                         }
                         
