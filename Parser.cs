@@ -41,11 +41,6 @@ namespace JSonParser
                             }
                             text_entry = text_entry.Replace(".", "." + Environment.NewLine);
                         }
-                        
-                        while (text_entry.StartsWith(' '))
-                        {
-                            text_entry = text_entry.Remove(0, 1);
-                        }
 
                         if (text_entry.Contains("[Reads]"))
                         {
@@ -56,8 +51,48 @@ namespace JSonParser
                         {
                             text_entry = text_entry.Replace("[Aside] ", "");
                         }
+                        int count = text_entry.Length;
+                        //Console.WriteLine(text_entry);
+                        //Console.WriteLine("-------");
+                        for (int i = 0; i < count; i++)
+                        {
+                            // Checks if <index> is bigger than the string length
+                            if (i == count - 1)
+                            {
+                                break;
+                            }
 
-                        Console.WriteLine(text_entry);
+                            //Console.Write(text_entry[i]);
+                            char c = text_entry[i];
+
+                            // Checks if there are two different case characters like eC or aE or iV and separates them
+                            if (char.IsLower(c) && char.IsUpper(text_entry[i + 1]))
+                            {
+                                if (char.IsUpper(text_entry[i + 1]))
+                                    continue;
+                                text_entry = text_entry.Replace(text_entry[i].ToString(), text_entry[i] + " ");
+                                count++;
+                            }
+
+                            // Checks if .:?!;, are together with a letter or a number
+                            if ((c == ':' || c == '?' || c == '!' || c == ';' || c == ',') && char.IsLetterOrDigit(text_entry[i + 1]))
+                            {
+                                text_entry = text_entry.Replace(text_entry[i].ToString(), text_entry[i] + " ");
+                                count++;
+                            }
+                        }
+
+                        if (!text_entry.EndsWith(' ') && !text_entry.EndsWith(Environment.NewLine))
+                        {
+                            text_entry += ' ';
+                        }
+
+                        while (char.IsWhiteSpace(text_entry[0]))
+                        {
+                            text_entry = text_entry.Remove(0, 1);
+                        }
+
+                        //Console.Write(text_entry);
                         await File.AppendAllTextAsync(path + ".txt", text_entry);
 
                     }
