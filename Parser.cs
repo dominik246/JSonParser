@@ -3,6 +3,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace JSonParser
@@ -11,13 +12,22 @@ namespace JSonParser
     {
         public async Task ParseJson(string jsonString, string path)
         {
-            dynamic json = JArray.Parse(jsonString);
+            JArray json = JArray.Parse(jsonString);
             string text_entry = "";
             string searchEntry = "text_entry";
+            int iterator = 0;
+
             await Task.Run(async () =>
             {
+                Console.Write("Performing task... ");
+                var progress = new ProgressBar();
                 foreach (JObject item in json)
                 {
+                    iterator++;
+                    progress.Report((double)iterator / json.Count);
+                    
+
+
                     // item is body containing "index","type", "line_id", "play_name", "speech_number", "speaker", "text_entry"
                     try
                     {
@@ -52,8 +62,7 @@ namespace JSonParser
                             text_entry = text_entry.Replace("[Aside] ", "");
                         }
                         int count = text_entry.Length;
-                        //Console.WriteLine(text_entry);
-                        //Console.WriteLine("-------");
+
                         for (int i = 0; i < count; i++)
                         {
                             // Checks if <index> is bigger than the string length
@@ -75,7 +84,7 @@ namespace JSonParser
                             }
 
                             // Checks if .:?!;, are together with a letter or a number
-                            if ((c == ':' || c == '?' || c == '!' || c == ';' || c == ',') && char.IsLetterOrDigit(text_entry[i + 1]))
+                            if ((c == ':' || c == '?' || c == '!' || c == ';' || c == ',' || c== '-') && char.IsLetterOrDigit(text_entry[i + 1]))
                             {
                                 text_entry = text_entry.Replace(text_entry[i].ToString(), text_entry[i] + " ");
                                 count++;
@@ -91,8 +100,7 @@ namespace JSonParser
                         {
                             text_entry = text_entry.Remove(0, 1);
                         }
-
-                        //Console.Write(text_entry);
+                        
                         await File.AppendAllTextAsync(path + ".txt", text_entry);
 
                     }
@@ -103,6 +111,7 @@ namespace JSonParser
                         continue;
                     }
                 }
+                Console.WriteLine("Done.");
             });
         }
     }
